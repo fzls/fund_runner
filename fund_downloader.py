@@ -48,8 +48,9 @@ class FundDownloader:
 
     def __init__(self, fund_code: str, page_size=10000):
         self.url = self.url % (fund_code, page_size)
+        self._download_data()
 
-    def download(self):
+    def _download_data(self):
         res = requests.get(self.url, headers=headers)
         left_index = res.text.find("(")
         right_index = res.text.rfind(")")
@@ -70,5 +71,4 @@ class FundDownloader:
 
 if __name__ == '__main__':
     fd = FundDownloader("110022")
-    fd.download()
     fd.print()
