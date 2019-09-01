@@ -20,7 +20,7 @@ class StrategyInterface(object):
 
         :param time: str
         :param net_values: [FundDailyInfo]
-        :param profits: [{invest_money, profit, profit_rate}]
+        :param profits: [{time,invest_money, profit, profit_rate}]
         :param decision_shares: [float]
         :param current_share: float
         :param current_invest_money: float

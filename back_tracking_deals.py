@@ -78,6 +78,9 @@ class BackTrackingDeal:
                         "invest_money": invest_money,
                         "profit": profit,
                         "profit_rate": profit_rate,
+                        "share": invest_share,
+                        "share_money": invest_share * last_info.unit_net_value,
+                        "sell_money": sell_money,
                     })
 
                 # T日
@@ -93,10 +96,10 @@ class BackTrackingDeal:
                 last_info = info
 
         pprint.pprint(profits, indent=2)
-        print("decisions=", decisions)
         pass
 
 
 if __name__ == '__main__':
     btd = BackTrackingDeal("110022", "易方达消费行业股票", DingtouStrategy())
+    # btd.run("2019-01-01", "2019-08-31")
     btd.run("2019-01-01", "2019-08-31")
