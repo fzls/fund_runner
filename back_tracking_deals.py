@@ -34,7 +34,7 @@ class BackTrackingDeal:
                datetime.datetime.strptime(time, "%Y-%m-%d") <= \
                datetime.datetime.strptime(end, "%Y-%m-%d")
 
-    def run(self, start_time: str, end_time: str, ouput_file):
+    def run(self, start_time: str, end_time: str) -> dict:
         """
 
         :param start_time: 开始时间，如2019-08-21
@@ -100,15 +100,8 @@ class BackTrackingDeal:
                 last_info = info
 
         if len(profits) != 0:
-            res = profits[-1]
-            duration = (datetime.datetime.strptime(end_time, "%Y-%m-%d") - datetime.datetime.strptime(start_time,
-                                                                                                      "%Y-%m-%d")).days
-            line = "%s,%s天,%s,%s,%s,%s,%s" % (
-                self.fund_name, duration, self.strategy.name(), res["invest_money"], res["profit"], res["profit_rate"],
-                res["annualized_profit_rate"])
-            print(line)
-            if ouput_file is not None:
-                print(line, file=ouput_file)
+            return profits[-1]
+        return {}
         pass
 
 
@@ -143,26 +136,64 @@ if __name__ == '__main__':
         30,
     ]
 
+    now = datetime.datetime.now().strftime("%Y-%m-%d")
     times = [
         {"start": "2016-01-01", "end": "2017-01-01"},  # 2016年
         {"start": "2017-01-01", "end": "2018-01-01"},  # 2017年
         {"start": "2018-01-01", "end": "2019-01-01"},  # 2018年
-        {"start": "2016-01-01", "end": "3000-01-01"},  # 2016年至今
-        {"start": "2017-01-01", "end": "3000-01-01"},  # 2017年至今
-        {"start": "2018-01-01", "end": "3000-01-01"},  # 2018年至今
-        {"start": "2019-01-01", "end": "3000-01-01"},  # 2019年至今
+        {"start": "2016-01-01", "end": now},  # 2016年至今
+        {"start": "2017-01-01", "end": now},  # 2017年至今
+        {"start": "2018-01-01", "end": now},  # 2018年至今
+        {"start": "2019-01-01", "end": now},  # 2019年至今
     ]
 
     for t in times:
         start = t["start"]
         end = t["end"]
+        duration = (datetime.datetime.strptime(end, "%Y-%m-%d") - datetime.datetime.strptime(start, "%Y-%m-%d")).days
         file_name = "result/%s_%s.csv" % (start, end)
         if not os.path.exists(os.path.dirname(file_name)):
             os.makedirs(os.path.dirname(file_name))
-                
+
+        outputs = []
+        for fund in funds:
+            for peroid in peroids:
+                strategy = DingtouStrategy(days=peroid)
+                profit = BackTrackingDeal(fund["code"], fund["name"], strategy).run(start, end)
+                if len(profit) != 0:
+                    outputs.append({
+                        "fund_name": fund["name"],
+                        "duration": duration,
+                        "strategy": strategy.name(),
+                        "invest_money": profit["invest_money"],
+                        "profit": profit["profit"],
+                        "profit_rate": profit["profit_rate"],
+                        "annualized_profit_rate": profit["annualized_profit_rate"],
+                    })
+
+                    # show status
+                    line = "%s,%s天,%s,%s,%s,%s,%s" % (
+                        fund["name"],
+                        duration,
+                        strategy.name(),
+                        profit["invest_money"],
+                        profit["profit"],
+                        profit["profit_rate"],
+                        profit["annualized_profit_rate"])
+                    print(line)
+
+        outputs.sort(key=lambda x: x["profit"], reverse=True)
+
         with open(file_name, "w+") as ouput_file:
             print("名称,时长,定投周期,总投入,总盈利,总盈利率,年化利率", file=ouput_file)
-            for fund in funds:
-                for peroid in peroids:
-                    BackTrackingDeal(fund["code"], fund["name"], DingtouStrategy(days=peroid)).run(start, end,
-                                                                                                   ouput_file)
+
+            for output in outputs:
+                line = "%s,%s天,%s,%s,%s,%s,%s" % (
+                    output["fund_name"],
+                    output["duration"],
+                    output["strategy"],
+                    output["invest_money"],
+                    output["profit"],
+                    output["profit_rate"],
+                    output["annualized_profit_rate"])
+                print(line, file=ouput_file)
