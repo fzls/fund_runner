@@ -7,6 +7,7 @@
 # Email  : fzls.zju@gmail.com
 # -------------------------------
 import datetime
+import os
 
 from fund_downloader import FundDownloader
 from strategy_dingtou import DingtouStrategy
@@ -100,7 +101,8 @@ class BackTrackingDeal:
 
         if len(profits) != 0:
             res = profits[-1]
-            duration = (datetime.datetime.strptime(end_time, "%Y-%m-%d") - datetime.datetime.strptime(start_time, "%Y-%m-%d")).days
+            duration = (datetime.datetime.strptime(end_time, "%Y-%m-%d") - datetime.datetime.strptime(start_time,
+                                                                                                      "%Y-%m-%d")).days
             line = "%s,%s天,%s,%s,%s,%s,%s" % (
                 self.fund_name, duration, self.strategy.name(), res["invest_money"], res["profit"], res["profit_rate"],
                 res["annualized_profit_rate"])
@@ -142,17 +144,25 @@ if __name__ == '__main__':
     ]
 
     times = [
-        {"start": "2017-01-01", "end":"2018-01-01"},
-        {"start": "2018-01-01", "end":"2019-01-01"},
-        {"start": "2019-01-01", "end":"2020-01-01"},
-        {"start": "2018-01-01", "end": "2020-01-01"},
+        {"start": "2016-01-01", "end": "2017-01-01"},  # 2016年
+        {"start": "2017-01-01", "end": "2018-01-01"},  # 2017年
+        {"start": "2018-01-01", "end": "2019-01-01"},  # 2018年
+        {"start": "2016-01-01", "end": "3000-01-01"},  # 2016年至今
+        {"start": "2017-01-01", "end": "3000-01-01"},  # 2017年至今
+        {"start": "2018-01-01", "end": "3000-01-01"},  # 2018年至今
+        {"start": "2019-01-01", "end": "3000-01-01"},  # 2019年至今
     ]
 
     for t in times:
         start = t["start"]
         end = t["end"]
-        with open("%s_%s.csv"%(start, end), "w+") as ouput_file:
+        file_name = "result/%s_%s.csv" % (start, end)
+        if not os.path.exists(os.path.dirname(file_name)):
+            os.makedirs(os.path.dirname(file_name))
+                
+        with open(file_name, "w+") as ouput_file:
             print("名称,时长,定投周期,总投入,总盈利,总盈利率,年化利率", file=ouput_file)
             for fund in funds:
                 for peroid in peroids:
-                    BackTrackingDeal(fund["code"], fund["name"], DingtouStrategy(days=peroid)).run(start, end, ouput_file)
+                    BackTrackingDeal(fund["code"], fund["name"], DingtouStrategy(days=peroid)).run(start, end,
+                                                                                                   ouput_file)
