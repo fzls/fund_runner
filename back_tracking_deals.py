@@ -7,7 +7,6 @@
 # Email  : fzls.zju@gmail.com
 # -------------------------------
 import datetime
-import pprint
 
 from fund_downloader import FundDownloader
 from strategy_dingtou import DingtouStrategy
@@ -34,7 +33,7 @@ class BackTrackingDeal:
                datetime.datetime.strptime(time, "%Y-%m-%d") <= \
                datetime.datetime.strptime(end, "%Y-%m-%d")
 
-    def run(self, start_time: str, end_time: str):
+    def run(self, start_time: str, end_time: str, ouput_file):
         """
 
         :param start_time: 开始时间，如2019-08-21
@@ -69,9 +68,12 @@ class BackTrackingDeal:
                         invest_share += decision_share
 
                     profit = invest_share * last_info.unit_net_value + sell_money - invest_money
-                    profit_rate = 0.0
+                    profit_rate = "0%"
+                    annualized_profit_rate = "0%"
+                    days = (datetime.datetime.now() - datetime.datetime.strptime(start_time, "%Y-%m-%d")).days
                     if invest_money != 0:
-                        profit_rate = profit / invest_money
+                        profit_rate = "%.4f%%" % (100 * profit / invest_money)
+                        annualized_profit_rate = "%.4f%%" % (100 * profit / invest_money * 365 / days)
 
                     profits.append({
                         "time": last_info.time,
@@ -81,6 +83,7 @@ class BackTrackingDeal:
                         "share": invest_share,
                         "share_money": invest_share * last_info.unit_net_value,
                         "sell_money": sell_money,
+                        "annualized_profit_rate": annualized_profit_rate,
                     })
 
                 # T日
@@ -95,11 +98,61 @@ class BackTrackingDeal:
 
                 last_info = info
 
-        pprint.pprint(profits, indent=2)
+        if len(profits) != 0:
+            res = profits[-1]
+            duration = (datetime.datetime.strptime(end_time, "%Y-%m-%d") - datetime.datetime.strptime(start_time, "%Y-%m-%d")).days
+            line = "%s,%s天,%s,%s,%s,%s,%s" % (
+                self.fund_name, duration, self.strategy.name(), res["invest_money"], res["profit"], res["profit_rate"],
+                res["annualized_profit_rate"])
+            print(line)
+            if ouput_file is not None:
+                print(line, file=ouput_file)
         pass
 
 
 if __name__ == '__main__':
-    btd = BackTrackingDeal("110022", "易方达消费行业股票", DingtouStrategy())
-    # btd.run("2019-01-01", "2019-08-31")
-    btd.run("2019-01-01", "2019-08-31")
+    funds = [
+        # 股票基金
+        {"code": "110022", "name": "易方达消费行业股票"},
+
+        # 债券基金
+        {"code": "160621", "name": "鹏华丰和债券(LOF)A"},
+        {"code": "470018", "name": "汇添富双利债券A"},
+        {"code": "470018", "name": "汇添富双利债券A"},
+
+        # 混合基金
+        {"code": "519727", "name": "交银成长30混合"},
+        {"code": "519778", "name": "交银经济新动力混合"},
+        {"code": "673060", "name": "西部利得景瑞灵活配置混合"},
+
+        # 大盘指数基金
+        {"code": "070039", "name": "嘉实中证500ETF联接C"},
+        {"code": "002987", "name": "广发沪深300ETF联接C"},
+
+        # 行业指数基金
+        {"code": "161725", "name": "招商中证白酒指数分级"},
+        {"code": "160632", "name": "鹏华酒分级"},
+        {"code": "160222", "name": "国泰国证食品饮料行业指数分级"},
+    ]
+
+    peroids = [
+        7,
+        14,
+        30,
+    ]
+
+    times = [
+        {"start": "2017-01-01", "end":"2018-01-01"},
+        {"start": "2018-01-01", "end":"2019-01-01"},
+        {"start": "2019-01-01", "end":"2020-01-01"},
+        {"start": "2018-01-01", "end": "2020-01-01"},
+    ]
+
+    for t in times:
+        start = t["start"]
+        end = t["end"]
+        with open("%s_%s.csv"%(start, end), "w+") as ouput_file:
+            print("名称,时长,定投周期,总投入,总盈利,总盈利率,年化利率", file=ouput_file)
+            for fund in funds:
+                for peroid in peroids:
+                    BackTrackingDeal(fund["code"], fund["name"], DingtouStrategy(days=peroid)).run(start, end, ouput_file)

@@ -14,7 +14,7 @@ class StrategyInterface(object):
 
     @abstractmethod
     # 返回决策的基金份额或基金额度（正数，即买入时表示买入金额，负数，即卖出时则表示卖出份额）
-    def run(self, time:str, net_values: list, profits: list, decision_shares: list, current_share: float,
+    def run(self, time: str, net_values: list, profits: list, decision_shares: list, current_share: float,
             current_invest_money: float, sell_money: float) -> float:
         """
 
@@ -26,4 +26,7 @@ class StrategyInterface(object):
         :param current_invest_money: float
         :param sell_money: float
         """
+        pass
+
+    def name(self) -> str:
         pass
