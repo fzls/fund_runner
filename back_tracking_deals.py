@@ -113,7 +113,6 @@ if __name__ == '__main__':
         # 债券基金
         {"code": "160621", "name": "鹏华丰和债券(LOF)A"},
         {"code": "470018", "name": "汇添富双利债券A"},
-        {"code": "470018", "name": "汇添富双利债券A"},
 
         # 混合基金
         {"code": "519727", "name": "交银成长30混合"},
@@ -140,6 +139,7 @@ if __name__ == '__main__':
     lastMonth = (datetime.datetime.now() - datetime.timedelta(days=31)).strftime("%Y-%m-%d")
     lastSeason = (datetime.datetime.now() - datetime.timedelta(days=92)).strftime("%Y-%m-%d")
     lastHalfYear = (datetime.datetime.now() - datetime.timedelta(days=184)).strftime("%Y-%m-%d")
+    lastYear = (datetime.datetime.now() - datetime.timedelta(days=365)).strftime("%Y-%m-%d")
     times = [
         {"start": "2016-01-01", "end": "2017-01-01"},  # 2016年
         {"start": "2017-01-01", "end": "2018-01-01"},  # 2017年
@@ -151,6 +151,7 @@ if __name__ == '__main__':
         {"start": lastMonth, "end": now},  # 上个月
         {"start": lastSeason, "end": now},  # 上个季度
         {"start": lastHalfYear, "end": now},  # 上半年
+        {"start": lastYear, "end": now},  # 上年
     ]
 
     for t in times:
