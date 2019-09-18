@@ -137,6 +137,9 @@ if __name__ == '__main__':
     ]
 
     now = datetime.datetime.now().strftime("%Y-%m-%d")
+    lastMonth = (datetime.datetime.now() - datetime.timedelta(days=31)).strftime("%Y-%m-%d")
+    lastSeason = (datetime.datetime.now() - datetime.timedelta(days=92)).strftime("%Y-%m-%d")
+    lastHalfYear = (datetime.datetime.now() - datetime.timedelta(days=184)).strftime("%Y-%m-%d")
     times = [
         {"start": "2016-01-01", "end": "2017-01-01"},  # 2016年
         {"start": "2017-01-01", "end": "2018-01-01"},  # 2017年
@@ -145,6 +148,9 @@ if __name__ == '__main__':
         {"start": "2017-01-01", "end": now},  # 2017年至今
         {"start": "2018-01-01", "end": now},  # 2018年至今
         {"start": "2019-01-01", "end": now},  # 2019年至今
+        {"start": lastMonth, "end": now},  # 上个月
+        {"start": lastSeason, "end": now},  # 上个季度
+        {"start": lastHalfYear, "end": now},  # 上半年
     ]
 
     for t in times:
