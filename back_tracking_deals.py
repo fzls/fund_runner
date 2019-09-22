@@ -34,6 +34,30 @@ class BackTrackingDeal:
                datetime.datetime.strptime(time, "%Y-%m-%d") <= \
                datetime.datetime.strptime(end, "%Y-%m-%d")
 
+    def get_data_index(self, time: str) -> int:
+        target = datetime.datetime.strptime(time, "%Y-%m-%d")
+        if target <= datetime.datetime.strptime(self.fund.data[0].time, "%Y-%m-%d"):
+            return 0
+        if target >= datetime.datetime.strptime(self.fund.data[-1].time, "%Y-%m-%d"):
+            return len(self.fund.data) - 1
+
+        low = 0
+        high = len(self.fund.data) - 1
+        while low <= high:
+            i = (low + high) // 2
+            t = datetime.datetime.strptime(self.fund.data[i].time, "%Y-%m-%d")
+            if t == target:
+                return i
+            elif t < target:
+                low = i + 1
+            else:
+                high = i - 1
+
+        return low
+
+    def get_range_data(self, start: str, end: str) -> list:
+        return self.fund.data[self.get_data_index(start): self.get_data_index(end) + 1]
+
     def run(self, start_time: str, end_time: str) -> dict:
         """
 
@@ -50,54 +74,54 @@ class BackTrackingDeal:
 
         last_info = None
 
-        for info in self.fund.data:
-            if self.in_range(info.time, start_time, end_time):
-                if last_info is not None:
-                    # 处理T-1日的决策信息
-                    net_values.append(last_info)
-                    # 更新总投资金额和份额，并更新收益情况
-                    decision = decisions[-1]
-                    if decision != 0.0:
-                        decision_share = 0.0
-                        if decision > 0.0:  # 买入金额
-                            invest_money += decision
-                            decision_share = decision / last_info.unit_net_value
-                        if decision < 0.0:  # 卖出份额
-                            sell_money += -decision * last_info.unit_net_value
-                            decision_share = decision
+        for info in self.get_range_data(start_time, end_time):
+            if last_info is not None:
+                # 处理T-1日的决策信息
+                net_values.append(last_info)
+                # 更新总投资金额和份额，并更新收益情况
+                decision = decisions[-1]
+                if decision != 0.0:
+                    decision_share = 0.0
+                    if decision > 0.0:  # 买入金额
+                        invest_money += decision
+                        decision_share = decision / last_info.unit_net_value
+                    if decision < 0.0:  # 卖出份额
+                        sell_money += -decision * last_info.unit_net_value
+                        decision_share = decision
 
-                        invest_share += decision_share
+                    invest_share += decision_share
 
-                    profit = invest_share * last_info.unit_net_value + sell_money - invest_money
-                    profit_rate = "0%"
-                    annualized_profit_rate = "0%"
-                    days = (datetime.datetime.strptime(end_time, "%Y-%m-%d") - datetime.datetime.strptime(start_time, "%Y-%m-%d")).days
-                    if invest_money != 0:
-                        profit_rate = "%.4f%%" % (100 * profit / invest_money)
-                        annualized_profit_rate = "%.4f%%" % (100 * profit / invest_money * 365 / days)
+                profit = invest_share * last_info.unit_net_value + sell_money - invest_money
+                profit_rate = "0%"
+                annualized_profit_rate = "0%"
+                days = (datetime.datetime.strptime(end_time, "%Y-%m-%d") - datetime.datetime.strptime(start_time,
+                                                                                                      "%Y-%m-%d")).days
+                if invest_money != 0:
+                    profit_rate = "%.4f%%" % (100 * profit / invest_money)
+                    annualized_profit_rate = "%.4f%%" % (100 * profit / invest_money * 365 / days)
 
-                    profits.append({
-                        "time": last_info.time,
-                        "invest_money": invest_money,
-                        "profit": profit,
-                        "profit_rate": profit_rate,
-                        "share": invest_share,
-                        "share_money": invest_share * last_info.unit_net_value,
-                        "sell_money": sell_money,
-                        "annualized_profit_rate": annualized_profit_rate,
-                    })
+                profits.append({
+                    "time": last_info.time,
+                    "invest_money": invest_money,
+                    "profit": profit,
+                    "profit_rate": profit_rate,
+                    "share": invest_share,
+                    "share_money": invest_share * last_info.unit_net_value,
+                    "sell_money": sell_money,
+                    "annualized_profit_rate": annualized_profit_rate,
+                })
 
-                # T日
-                # 根据策略做决策
-                decision = self.strategy.run(info.time, net_values,
-                                             profits,
-                                             decisions,
-                                             invest_share, invest_money, sell_money)
+            # T日
+            # 根据策略做决策
+            decision = self.strategy.run(info.time, net_values,
+                                         profits,
+                                         decisions,
+                                         invest_share, invest_money, sell_money)
 
-                # 添加决策
-                decisions.append(decision)
+            # 添加决策
+            decisions.append(decision)
 
-                last_info = info
+            last_info = info
 
         if len(profits) != 0:
             return profits[-1]
@@ -157,7 +181,7 @@ if __name__ == '__main__':
     fund_deal_map = {}
     for idx, fund in enumerate(funds):
         #  获取基金数据
-        print("[%d/%d] Loading data for %s"%(idx+1, len(funds), fund["name"]))
+        print("[%d/%d] Loading data for %s" % (idx + 1, len(funds), fund["name"]))
         fund_deal_map[fund["name"]] = BackTrackingDeal(fund["code"], fund["name"], DingtouStrategy(days=1))
 
     for t in times:
@@ -173,7 +197,7 @@ if __name__ == '__main__':
             summary[peroid] = {
                 "fund_name": "平均",
                 "duration": duration,
-                "strategy": "%d天"%peroid,
+                "strategy": "%d天" % peroid,
                 "invest_money": 0.0,
                 "profit": 0.0,
                 "profit_rate": "0%",
@@ -216,8 +240,8 @@ if __name__ == '__main__':
         outputs.sort(key=lambda x: x["profit"], reverse=True)
 
         for k, v in summary.items():
-            v["profit_rate"]= "%.4f%%" % (100 * v["profit"] / v["invest_money"])
-            v["annualized_profit_rate"]= "%.4f%%" % (100 * v["profit"] / v["invest_money"] * 365 / duration)
+            v["profit_rate"] = "%.4f%%" % (100 * v["profit"] / v["invest_money"])
+            v["annualized_profit_rate"] = "%.4f%%" % (100 * v["profit"] / v["invest_money"] * 365 / duration)
             outputs.append(v)
 
         with open(file_name, "w+") as ouput_file:
