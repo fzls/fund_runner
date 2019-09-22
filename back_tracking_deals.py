@@ -154,6 +154,12 @@ if __name__ == '__main__':
         {"start": lastYear, "end": now},  # 上年
     ]
 
+    fund_deal_map = {}
+    for idx, fund in enumerate(funds):
+        #  获取基金数据
+        print("[%d/%d] Loading data for %s"%(idx+1, len(funds), fund["name"]))
+        fund_deal_map[fund["name"]] = BackTrackingDeal(fund["code"], fund["name"], DingtouStrategy(days=1))
+
     for t in times:
         start = t["start"]
         end = t["end"]
@@ -162,11 +168,26 @@ if __name__ == '__main__':
         if not os.path.exists(os.path.dirname(file_name)):
             os.makedirs(os.path.dirname(file_name))
 
+        summary = {}
+        for peroid in peroids:
+            summary[peroid] = {
+                "fund_name": "平均",
+                "duration": duration,
+                "strategy": "%d天"%peroid,
+                "invest_money": 0.0,
+                "profit": 0.0,
+                "profit_rate": "0%",
+                "annualized_profit_rate": "0%",
+            }
+
         outputs = []
         for fund in funds:
+            fund_deal = fund_deal_map[fund["name"]]
             for peroid in peroids:
+                # 尝试不同策略
                 strategy = DingtouStrategy(days=peroid)
-                profit = BackTrackingDeal(fund["code"], fund["name"], strategy).run(start, end)
+                fund_deal.strategy = strategy
+                profit = fund_deal.run(start, end)
                 if len(profit) != 0:
                     outputs.append({
                         "fund_name": fund["name"],
@@ -189,7 +210,15 @@ if __name__ == '__main__':
                         profit["annualized_profit_rate"])
                     print(line)
 
+                    summary[peroid]["invest_money"] += profit["invest_money"]
+                    summary[peroid]["profit"] += profit["profit"]
+
         outputs.sort(key=lambda x: x["profit"], reverse=True)
+
+        for k, v in summary.items():
+            v["profit_rate"]= "%.4f%%" % (100 * v["profit"] / v["invest_money"])
+            v["annualized_profit_rate"]= "%.4f%%" % (100 * v["profit"] / v["invest_money"] * 365 / duration)
+            outputs.append(v)
 
         with open(file_name, "w+") as ouput_file:
             print("名称,时长,定投周期,总投入,总盈利,总盈利率,年化利率", file=ouput_file)
