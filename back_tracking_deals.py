@@ -71,7 +71,7 @@ class BackTrackingDeal:
                     profit = invest_share * last_info.unit_net_value + sell_money - invest_money
                     profit_rate = "0%"
                     annualized_profit_rate = "0%"
-                    days = (datetime.datetime.now() - datetime.datetime.strptime(start_time, "%Y-%m-%d")).days
+                    days = (datetime.datetime.strptime(end_time, "%Y-%m-%d") - datetime.datetime.strptime(start_time, "%Y-%m-%d")).days
                     if invest_money != 0:
                         profit_rate = "%.4f%%" % (100 * profit / invest_money)
                         annualized_profit_rate = "%.4f%%" % (100 * profit / invest_money * 365 / days)
