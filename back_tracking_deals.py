@@ -13,6 +13,7 @@ from fund_downloader import FundDownloader
 from strategy_dingtou import DingtouStrategy
 from strategy_inteface import StrategyInterface
 
+# RE: 改用golang去实现
 
 class BackTrackingDeal:
     fund_code = ""  # 基金代码
@@ -148,9 +149,7 @@ if __name__ == '__main__':
         {"code": "002987", "name": "广发沪深300ETF联接C"},
 
         # 行业指数基金
-        {"code": "161725", "name": "招商中证白酒指数分级"},
         {"code": "160632", "name": "鹏华酒分级"},
-        {"code": "160222", "name": "国泰国证食品饮料行业指数分级"},
     ]
 
     peroids = [
@@ -198,7 +197,7 @@ if __name__ == '__main__':
                 "fund_name": "平均",
                 "duration": duration,
                 "strategy": "%d天" % peroid,
-                "invest_money": 0.0,
+                "invest_money": 0.001,
                 "profit": 0.0,
                 "profit_rate": "0%",
                 "annualized_profit_rate": "0%",
