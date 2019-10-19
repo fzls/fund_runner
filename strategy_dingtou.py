@@ -10,6 +10,8 @@ import datetime
 
 from strategy_inteface import StrategyInterface
 
+MONEY_PER_MONTH_PER_FUND = 400.0  # 每个基金一个月投资数目
+
 
 class DingtouStrategy(StrategyInterface):
     def name(self) -> str:
@@ -24,8 +26,8 @@ class DingtouStrategy(StrategyInterface):
             current_invest_money: float, sell_money: float) -> float:
         # 最简单的每周定投
         t = datetime.datetime.strptime(time, "%Y-%m-%d")
-        if t - self.last_time >= self.period:  # 每周期定投400/30*周期天数（每个基金一个月400元）
+        if t - self.last_time >= self.period:
             self.last_time = t
-            return 400.0/30*self.days
+            return MONEY_PER_MONTH_PER_FUND / 30 * self.days
 
         return 0.0

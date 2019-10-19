@@ -13,6 +13,7 @@ from fund_downloader import FundDownloader
 from strategy_dingtou import DingtouStrategy
 from strategy_inteface import StrategyInterface
 
+
 # RE: 改用golang去实现
 
 class BackTrackingDeal:
@@ -123,7 +124,6 @@ class BackTrackingDeal:
             decisions.append(decision)
 
             last_info = info
-
         if len(profits) != 0:
             return profits[-1]
         return {}
@@ -132,24 +132,29 @@ class BackTrackingDeal:
 
 if __name__ == '__main__':
     funds = [
-        # 股票基金
-        {"code": "110022", "name": "易方达消费行业股票"},
-
-        # 债券基金
-        {"code": "160621", "name": "鹏华丰和债券(LOF)A"},
-        {"code": "470018", "name": "汇添富双利债券A"},
-
-        # 混合基金
-        {"code": "519727", "name": "交银成长30混合"},
-        {"code": "519778", "name": "交银经济新动力混合"},
-        {"code": "673060", "name": "西部利得景瑞灵活配置混合"},
-
-        # 大盘指数基金
+        # # 股票基金
+        {"code": "004851", "name": "广发医疗保健股票"},
+        {"code": "000913", "name": "农银医疗保健股票"},
+        {"code": "000960", "name": "招商医药健康产业股票"},
+        #
+        # # 债券基金
+        {"code": "005461", "name": "南方希元转债"},
+        {"code": "000080", "name": "天治可转债增强债券A"},
+        {"code": "004993", "name": "中欧可转债债券A"},
+        #
+        # # 混合基金
+        {"code": "050026", "name": "博时医疗保健行业混合A"},
+        {"code": "003096", "name": "中欧医疗健康混合C"},
+        {"code": "005689", "name": "中银医疗保健混合"},
+        #
+        # # 大盘指数基金
         {"code": "070039", "name": "嘉实中证500ETF联接C"},
         {"code": "002987", "name": "广发沪深300ETF联接C"},
 
-        # 行业指数基金
-        {"code": "160632", "name": "鹏华酒分级"},
+        # # 行业指数基金
+        {"code": "161035", "name": "富国中证医药主题指数增强"},
+        {"code": "161122", "name": "易方达生物分级"},
+        {"code": "161726", "name": "招商国证生物医药指数分级"},
     ]
 
     peroids = [
@@ -159,10 +164,13 @@ if __name__ == '__main__':
     ]
 
     now = datetime.datetime.now().strftime("%Y-%m-%d")
-    lastMonth = (datetime.datetime.now() - datetime.timedelta(days=31)).strftime("%Y-%m-%d")
-    lastSeason = (datetime.datetime.now() - datetime.timedelta(days=92)).strftime("%Y-%m-%d")
-    lastHalfYear = (datetime.datetime.now() - datetime.timedelta(days=184)).strftime("%Y-%m-%d")
-    lastYear = (datetime.datetime.now() - datetime.timedelta(days=365)).strftime("%Y-%m-%d")
+    lastMonth = (datetime.datetime.now() - datetime.timedelta(days=int(365 / 12 * 1))).strftime("%Y-%m-%d")
+    lastTwoMonth = (datetime.datetime.now() - datetime.timedelta(days=int(365 / 12 * 2))).strftime("%Y-%m-%d")
+    lastSeason = (datetime.datetime.now() - datetime.timedelta(days=int(365 / 12 * 3))).strftime("%Y-%m-%d")
+    lastFourMonth = (datetime.datetime.now() - datetime.timedelta(days=int(365 / 12 * 4))).strftime("%Y-%m-%d")
+    lastFiveMonth = (datetime.datetime.now() - datetime.timedelta(days=int(365 / 12 * 5))).strftime("%Y-%m-%d")
+    lastHalfYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 / 12 * 6))).strftime("%Y-%m-%d")
+    lastYear = (datetime.datetime.now() - datetime.timedelta(days=int(365))).strftime("%Y-%m-%d")
     times = [
         {"start": "2016-01-01", "end": "2017-01-01"},  # 2016年
         {"start": "2017-01-01", "end": "2018-01-01"},  # 2017年
@@ -172,9 +180,12 @@ if __name__ == '__main__':
         {"start": "2018-01-01", "end": now},  # 2018年至今
         {"start": "2019-01-01", "end": now},  # 2019年至今
         {"start": lastMonth, "end": now},  # 上个月
+        {"start": lastTwoMonth, "end": now},  # 前两个月
         {"start": lastSeason, "end": now},  # 上个季度
-        {"start": lastHalfYear, "end": now},  # 上半年
-        {"start": lastYear, "end": now},  # 上年
+        {"start": lastFourMonth, "end": now},  # 前四个月
+        {"start": lastFiveMonth, "end": now},  # 前五个月
+        {"start": lastHalfYear, "end": now},  # 前半年
+        {"start": lastYear, "end": now},  # 前年
     ]
 
     fund_deal_map = {}
