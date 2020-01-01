@@ -9,12 +9,13 @@
 import datetime
 import os
 
+import matplotlib.pyplot as plt
+from matplotlib.pylab import datestr2num
+
 from fund_downloader import FundDownloader
 from strategy_dingtou import DingtouStrategy
 from strategy_inteface import StrategyInterface
 
-
-# RE: 改用golang去实现
 
 class BackTrackingDeal:
     fund_code = ""  # 基金代码
@@ -129,8 +130,9 @@ class BackTrackingDeal:
         return {}
         pass
 
+DRAW_PLOTS = True
 
-if __name__ == '__main__':
+def main():
     funds = [
         # # 股票基金
         {"code": "004851", "name": "广发医疗保健股票"},
@@ -193,6 +195,34 @@ if __name__ == '__main__':
         #  获取基金数据
         print("[%d/%d] Loading data for %s" % (idx + 1, len(funds), fund["name"]))
         fund_deal_map[fund["name"]] = BackTrackingDeal(fund["code"], fund["name"], DingtouStrategy(days=1))
+
+    if DRAW_PLOTS:
+        # 绘走势图
+        # plt.style.use('ggplot')
+        plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+        plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+        plt.title(u'基金走势图')
+        fig, axs = plt.subplots(len(fund_deal_map), figsize=(10, 5 * len(fund_deal_map)))
+        idx = 0
+        start_dingtou_time = "2019-10-15"
+        for name, fund in fund_deal_map.items():
+            data = fund.get_range_data(start_dingtou_time, now)
+            # data = fund.fund.data
+            x = range(len(data))
+            x_date = [datestr2num(i.time) for i in data]
+            y_data = [i.unit_net_value for i in data]
+
+            fund.strategy = DingtouStrategy(days=30)
+            profit = fund.run(start_dingtou_time, now)
+
+            total_change_rate = (data[-1].unit_net_value - data[0].unit_net_value)/ data[0].unit_net_value * 100
+            axs[idx].plot_date(x_date, y_data, '-', label=u"%s-%s-[%f%%]-[%s]"%(fund.fund_code, fund.fund_name, total_change_rate, profit["profit_rate"]))
+            axs[idx].legend()
+            axs[idx].grid(True)
+            idx += 1
+        plt.xlabel(u'时间')
+        plt.ylabel(u'单位净值')
+        plt.show()
 
     for t in times:
         start = t["start"]
@@ -267,3 +297,7 @@ if __name__ == '__main__':
                     output["profit_rate"],
                     output["annualized_profit_rate"])
                 print(line, file=ouput_file)
+
+
+if __name__ == '__main__':
+    main()
