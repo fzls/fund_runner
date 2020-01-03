@@ -8,6 +8,7 @@
 # -------------------------------
 import datetime
 import os
+import shutil
 
 import matplotlib.pyplot as plt
 from matplotlib.pylab import datestr2num
@@ -223,6 +224,10 @@ def main():
         plt.xlabel(u'时间')
         plt.ylabel(u'单位净值')
         plt.show()
+
+    # 清空结果目录
+    shutil.rmtree("result")
+    print("output directory cleared")
 
     for t in times:
         start = t["start"]
