@@ -69,6 +69,41 @@ class FundDownloader:
         for info in self.data:
             print(info)
 
+class FundInfo:
+    code = ""
+    name = ""
+
+    def __init__(self, code:str, name:str):
+        self.code = code
+        self.name = name
+
+    def __str__(self):
+        return "%s %s" % (self.code, self.name)
+
+class AllFundDownloader:
+    get_all_funds_api = "http://fund.eastmoney.com/data/rankhandler.aspx?op=ph&dt=kf&ft=all&rs=&gs=0&sc=zzf&st=desc&sd=2019-01-06&ed=2020-01-06&qdii=&tabSubtype=,,,,,&pi=1&pn=60000&dx=1&v=0.5921715210640965"
+
+    funds = []
+
+    def __init__(self):
+        res = requests.get(self.get_all_funds_api)
+        left = "datas:"
+        right = ",allRecords"
+        left_index = res.text.find(left)
+        right_index = res.text.rfind(right)
+        data = json.loads(res.text[left_index + len(left):right_index])
+
+        for str in data:
+            cols = str.split(",")
+            code = cols[0]
+            name = cols[1]
+            self.funds.append(FundInfo(code, name))
+
+    def print(self):
+        for info in self.funds:
+            print(info)
+
+
 if __name__ == '__main__':
-    fd = FundDownloader("110022")
+    fd = AllFundDownloader()
     fd.print()

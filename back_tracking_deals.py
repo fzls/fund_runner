@@ -13,7 +13,7 @@ import shutil
 import matplotlib.pyplot as plt
 from matplotlib.pylab import datestr2num
 
-from fund_downloader import FundDownloader
+from fund_downloader import FundDownloader, AllFundDownloader
 from strategy_dingtou import DingtouStrategy
 from strategy_inteface import StrategyInterface
 
@@ -131,7 +131,8 @@ class BackTrackingDeal:
         return {}
         pass
 
-DRAW_PLOTS = True
+DRAW_PLOTS = False
+USE_ALL_FUNDS = True
 
 def main():
     funds = [
@@ -159,6 +160,16 @@ def main():
         {"code": "161122", "name": "易方达生物分级"},
         {"code": "161726", "name": "招商国证生物医药指数分级"},
     ]
+
+    if USE_ALL_FUNDS:
+        print("拉取全部基金列表")
+        funds = []
+        allFunds = AllFundDownloader()
+        for fund in allFunds.funds:
+            funds.append({
+                "code": fund.code,
+                "name": fund.name,
+            })
 
     peroids = [
         7,
