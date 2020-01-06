@@ -63,6 +63,8 @@ class FundDownloader:
             index = max_index - idx - 1
             if item["JZZZL"] == "":
                 item["JZZZL"] = "0.0"
+            if item["DWJZ"] == "":
+                item["DWJZ"] = "1.0"
             self.data[index] = FundDailyInfo(item["FSRQ"], float(item["DWJZ"]), float(item["JZZZL"]))
 
     def print(self):
