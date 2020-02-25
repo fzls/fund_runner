@@ -131,8 +131,21 @@ class BackTrackingDeal:
         return {}
         pass
 
-DRAW_PLOTS = False
-USE_ALL_FUNDS = True
+DRAW_PLOTS = True
+USE_ALL_FUNDS = False
+
+def get_dingtou_days():
+    days = []
+    start = datetime.datetime.strptime("2019-10-23", "%Y-%m-%d")
+    now = datetime.datetime.now()
+    while start < now:
+        days.append(start.strftime("%Y-%m-%d"))
+        if start.month < 12:
+            start = start.replace(month=start.month+1)
+        else:
+            start = start.replace(year=start.year+1, month=1)
+
+    return days
 
 def main():
     funds = [
@@ -140,7 +153,7 @@ def main():
         {"code": "004851", "name": "广发医疗保健股票"},
         {"code": "000913", "name": "农银医疗保健股票"},
         {"code": "000960", "name": "招商医药健康产业股票"},
-        #
+
         # # 债券基金
         {"code": "005461", "name": "南方希元转债"},
         {"code": "000080", "name": "天治可转债增强债券A"},
@@ -229,6 +242,8 @@ def main():
 
             total_change_rate = (data[-1].unit_net_value - data[0].unit_net_value)/ data[0].unit_net_value * 100
             axs[idx].plot_date(x_date, y_data, '-', label=u"%s-%s-[%f%%]-[%s]"%(fund.fund_code, fund.fund_name, total_change_rate, profit["profit_rate"]))
+            for day in get_dingtou_days():
+                axs[idx].axvline(datestr2num(day), ymin=0.0, ymax=1.0, color="gray")
             axs[idx].legend()
             axs[idx].grid(True)
             idx += 1
