@@ -114,3 +114,5 @@ venv.bak/
 *.jpeg
 *.ico
 *.lnk
+
+test.py

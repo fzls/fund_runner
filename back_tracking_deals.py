@@ -168,7 +168,7 @@ def merge_images_vertically_and_display(images_to_merge):
     print("合并所有今日估值图片到{}".format(merge_result_path))
 
     # 展现结果
-    webbrowser.open(merge_result_path)
+    webbrowser.get("C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s").open(merge_result_path)
 
 
 # 选项开关
