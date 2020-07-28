@@ -8,12 +8,15 @@
 # -------------------------------
 import datetime
 import os
+import pathlib
 import shutil
+import webbrowser
 
 import matplotlib.pyplot as plt
+from PIL import Image
 from matplotlib.pylab import datestr2num
 
-from fund_downloader import FundDownloader, AllFundDownloader
+from fund_downloader import FundDownloader, AllFundDownloader, FundGuzhiChartDownloader
 from strategy_dingtou import DingtouStrategy
 from strategy_inteface import StrategyInterface
 
@@ -131,8 +134,6 @@ class BackTrackingDeal:
         return {}
         pass
 
-DRAW_PLOTS = True
-USE_ALL_FUNDS = False
 
 def get_dingtou_days():
     days = []
@@ -141,11 +142,40 @@ def get_dingtou_days():
     while start < now:
         days.append(start.strftime("%Y-%m-%d"))
         if start.month < 12:
-            start = start.replace(month=start.month+1)
+            start = start.replace(month=start.month + 1)
         else:
-            start = start.replace(year=start.year+1, month=1)
+            start = start.replace(year=start.year + 1, month=1)
 
     return days
+
+
+def merge_images_vertically_and_display(images_to_merge):
+    images = [Image.open(x) for x in images_to_merge]
+    widths, heights = zip(*(i.size for i in images))
+
+    max_width = max(widths)
+    total_height = sum(heights)
+
+    new_im = Image.new('RGB', (max_width, total_height))
+
+    y_offset = 0
+    for im in images:
+        new_im.paste(im, (0, y_offset))
+        y_offset += im.size[1]
+
+    merge_result_path = '今日合并估值.png'
+    new_im.save(merge_result_path)
+    print("合并所有今日估值图片到{}".format(merge_result_path))
+
+    # 展现结果
+    webbrowser.open(merge_result_path)
+
+
+# 选项开关
+DRAW_PLOTS = False
+USE_ALL_FUNDS = False
+FETCH_FUNDS_GUZHI = True
+
 
 def main():
     funds = [
@@ -183,6 +213,33 @@ def main():
                 "code": fund.code,
                 "name": fund.name,
             })
+
+    # 下载每日净值图
+    if FETCH_FUNDS_GUZHI:
+        guzhi_images_dir = "guzhi_images"
+        print("下载每日净值图到{}".format(guzhi_images_dir))
+        # 创建结果目录
+        shutil.rmtree(guzhi_images_dir, True)
+        pathlib.Path(guzhi_images_dir).mkdir(parents=True, exist_ok=True)
+        for idx, fund in enumerate(funds):
+            chartDownloader = FundGuzhiChartDownloader(fund["code"], fund["name"], guzhi_images_dir)
+            res = ""
+            if chartDownloader.save_to_local():
+                res = "成功"
+            else:
+                res = "失败"
+            print("[{}/{}] 下载{}-{}成功, url={}".format(idx + 1, len(funds), chartDownloader.code, chartDownloader.name, chartDownloader.url))
+
+        # 合并为一个图
+        print("合并为单个图")
+        images_to_merge = []
+        for filename in os.listdir(guzhi_images_dir):
+            filepath = os.path.join(guzhi_images_dir, filename)
+            if filename.endswith(".png"):
+                images_to_merge.append(filepath)
+
+        merge_images_vertically_and_display(images_to_merge)
+        return
 
     peroids = [
         7,
@@ -240,8 +297,8 @@ def main():
             fund.strategy = DingtouStrategy(days=30)
             profit = fund.run(start_dingtou_time, now)
 
-            total_change_rate = (data[-1].unit_net_value - data[0].unit_net_value)/ data[0].unit_net_value * 100
-            axs[idx].plot_date(x_date, y_data, '-', label=u"%s-%s-[%f%%]-[%s]"%(fund.fund_code, fund.fund_name, total_change_rate, profit["profit_rate"]))
+            total_change_rate = (data[-1].unit_net_value - data[0].unit_net_value) / data[0].unit_net_value * 100
+            axs[idx].plot_date(x_date, y_data, '-', label=u"%s-%s-[%f%%]-[%s]" % (fund.fund_code, fund.fund_name, total_change_rate, profit["profit_rate"]))
             for day in get_dingtou_days():
                 axs[idx].axvline(datestr2num(day), ymin=0.0, ymax=1.0, color="gray")
             axs[idx].legend()

@@ -8,6 +8,9 @@
 # -------------------------------
 
 import json
+import os
+import random
+import shutil
 
 import requests
 
@@ -44,7 +47,7 @@ class FundDailyInfo:
 class FundDownloader:
     url = "http://api.fund.eastmoney.com/f10/lsjz?callback=jQuery18304544093691286102_1567163891868&fundCode=%s&pageIndex=1&pageSize=%d&startDate=&endDate=&_=1567164070044"
     total_count = 0
-    data = [] # sort by time inc
+    data = []  # sort by time inc
 
     def __init__(self, fund_code: str, page_size=10000):
         self.url = self.url % (fund_code, page_size)
@@ -79,16 +82,18 @@ class FundDownloader:
         for info in self.data:
             print(info)
 
+
 class FundInfo:
     code = ""
     name = ""
 
-    def __init__(self, code:str, name:str):
+    def __init__(self, code: str, name: str):
         self.code = code
         self.name = name
 
     def __str__(self):
         return "%s %s" % (self.code, self.name)
+
 
 class AllFundDownloader:
     get_all_funds_api = "http://fund.eastmoney.com/data/rankhandler.aspx?op=ph&dt=kf&ft=all&rs=&gs=0&sc=zzf&st=desc&sd=2019-01-06&ed=2020-01-06&qdii=&tabSubtype=,,,,,&pi=1&pn=60000&dx=1&v=0.5921715210640965"
@@ -114,6 +119,28 @@ class AllFundDownloader:
             print(info)
 
 
+class FundGuzhiChartDownloader:
+    get_all_funds_guzhi_api = "http://j4.dfcfw.com/charts/pic6/{code}.png?v={rand}"
+
+    funds = []
+
+    def __init__(self, code, name, result_dir):
+        self.code = code
+        self.name = name
+        self.url = self.get_all_funds_guzhi_api.format(code=self.code, rand=random.random())
+        self.result_dir = result_dir
+        self.filepath = os.path.join(self.result_dir, '{}.png'.format(self.code))
+
+    def save_to_local(self) -> bool:
+        res = requests.get(self.url, stream=True)
+        if res.status_code == 200:
+            with open(self.filepath, 'wb') as f:
+                res.raw.decode_content = True
+                shutil.copyfileobj(res.raw, f)
+
+        return res.status_code == 200
+
+
 if __name__ == '__main__':
-    fd = AllFundDownloader()
-    fd.print()
+    fd = FundGuzhiChartDownloader("161035", "富国中证医药主题指数增强", "guzhi_images")
+    fd.save_to_local()
