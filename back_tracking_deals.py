@@ -239,7 +239,6 @@ def main():
                 images_to_merge.append(filepath)
 
         merge_images_vertically_and_display(images_to_merge)
-        return
 
     peroids = [
         7,
