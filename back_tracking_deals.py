@@ -172,7 +172,7 @@ def merge_images_vertically_and_display(images_to_merge):
 
 
 # 选项开关
-DRAW_PLOTS = False
+DRAW_PLOTS = True
 USE_ALL_FUNDS = False
 FETCH_FUNDS_GUZHI = True
 
@@ -283,7 +283,7 @@ def main():
         # plt.style.use('ggplot')
         plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
         plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
-        plt.title(u'基金走势图')
+        # plt.title(u'基金走势图')
         fig, axs = plt.subplots(len(fund_deal_map), figsize=(10, 5 * len(fund_deal_map)))
         idx = 0
         start_dingtou_time = "2019-10-15"
@@ -306,7 +306,10 @@ def main():
             idx += 1
         plt.xlabel(u'时间')
         plt.ylabel(u'单位净值')
-        plt.show()
+        # plt.show()
+        plt.savefig("profit.png")
+        webbrowser.get("C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s").open("profit.png")
+
 
     # 清空结果目录
     shutil.rmtree("result")
