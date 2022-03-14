@@ -314,7 +314,7 @@ def main():
         plt.ylabel(u'单位净值')
         # plt.show()
         plt.savefig("profit.png")
-        webbrowser.get("C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s").open("profit.png")
+        webbrowser.get("C:/Program Files/Google/Chrome/Application/chrome.exe %s").open(os.path.realpath("profit.png"))
 
 
     # 清空结果目录
