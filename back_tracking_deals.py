@@ -318,14 +318,16 @@ def main():
 
 
     # 清空结果目录
-    shutil.rmtree("result")
+    result_dir = "result"
+    if os.path.isdir(result_dir):
+        shutil.rmtree(result_dir)
     print("output directory cleared")
 
     for t in times:
         start = t["start"]
         end = t["end"]
         duration = (datetime.datetime.strptime(end, "%Y-%m-%d") - datetime.datetime.strptime(start, "%Y-%m-%d")).days
-        file_name = "result/%s_%s.csv" % (start, end)
+        file_name = f"{result_dir}/{start}_{end}.csv"
         if not os.path.exists(os.path.dirname(file_name)):
             os.makedirs(os.path.dirname(file_name))
 
