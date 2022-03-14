@@ -172,9 +172,16 @@ def merge_images_vertically_and_display(images_to_merge):
 
 
 # 选项开关
-DRAW_PLOTS = True
-USE_ALL_FUNDS = False
-FETCH_FUNDS_GUZHI = True
+# MODE_SELECTED_ONLY = True
+MODE_SELECTED_ONLY = False
+if MODE_SELECTED_ONLY:
+    DRAW_PLOTS = True
+    USE_ALL_FUNDS = False
+    FETCH_FUNDS_GUZHI = True
+else:
+    DRAW_PLOTS = False
+    USE_ALL_FUNDS = True
+    FETCH_FUNDS_GUZHI = False
 
 
 def main():
