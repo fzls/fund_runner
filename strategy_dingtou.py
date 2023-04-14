@@ -10,7 +10,7 @@ import datetime
 
 from strategy_inteface import StrategyInterface
 
-MONEY_PER_MONTH_PER_FUND = 400.0  # 每个基金一个月投资数目
+MONEY_PER_MONTH_PER_FUND = 4000.0  # 每个基金一个月投资数目
 
 
 class DingtouStrategy(StrategyInterface):
