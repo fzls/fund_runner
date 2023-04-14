@@ -355,6 +355,7 @@ def main():
                 "profit": 0.0,
                 "profit_rate": "0%",
                 "annualized_profit_rate": "0%",
+                "unit_net_value_change_rate": "",
             }
 
         outputs = []
@@ -374,17 +375,20 @@ def main():
                         "profit": profit["profit"],
                         "profit_rate": profit["profit_rate"],
                         "annualized_profit_rate": profit["annualized_profit_rate"],
+                        "unit_net_value_change_rate": profit["unit_net_value_change_rate"],
                     })
 
                     # show status
-                    line = "%s,%s天,%s,%s,%s,%s,%s" % (
+                    line = "%s,%s天,%s,%s,%s,%s,%s,%s" % (
                         fund["name"],
                         duration,
                         strategy.name(),
                         profit["invest_money"],
                         profit["profit"],
                         profit["profit_rate"],
-                        profit["annualized_profit_rate"])
+                        profit["annualized_profit_rate"],
+                        profit["unit_net_value_change_rate"],
+                    )
                     print(line)
 
                     summary[peroid]["invest_money"] += profit["invest_money"]
@@ -398,17 +402,19 @@ def main():
             outputs.append(v)
 
         with open(file_name, "w+") as ouput_file:
-            print("名称,时长,定投周期,总投入,总盈利,总盈利率,年化利率", file=ouput_file)
+            print("名称,时长,定投周期,总投入,总盈利,总盈利率,年化利率,净值变化率", file=ouput_file)
 
             for output in outputs:
-                line = "%s,%s天,%s,%s,%s,%s,%s" % (
+                line = "%s,%s天,%s,%s,%s,%s,%s,%s" % (
                     output["fund_name"],
                     output["duration"],
                     output["strategy"],
                     output["invest_money"],
                     output["profit"],
                     output["profit_rate"],
-                    output["annualized_profit_rate"])
+                    output["annualized_profit_rate"],
+                    output["unit_net_value_change_rate"],
+                )
                 print(line, file=ouput_file)
 
 
