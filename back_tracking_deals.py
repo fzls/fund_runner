@@ -271,6 +271,8 @@ def main():
     lastFiveMonth = (datetime.datetime.now() - datetime.timedelta(days=int(365 / 12 * 5))).strftime("%Y-%m-%d")
     lastHalfYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 / 12 * 6))).strftime("%Y-%m-%d")
     lastYear = (datetime.datetime.now() - datetime.timedelta(days=int(365))).strftime("%Y-%m-%d")
+    lastTwoYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 2))).strftime("%Y-%m-%d")
+    lastThreeYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 3))).strftime("%Y-%m-%d")
     times = [
         {"start": "2016-01-01", "end": "2017-01-01"},  # 2016年
         {"start": "2017-01-01", "end": "2018-01-01"},  # 2017年
@@ -286,6 +288,8 @@ def main():
         {"start": lastFiveMonth, "end": now},  # 前五个月
         {"start": lastHalfYear, "end": now},  # 前半年
         {"start": lastYear, "end": now},  # 前年
+        {"start": lastTwoYear, "end": now},  # 前两年
+        {"start": lastThreeYear, "end": now},  # 前三年
     ]
 
     fund_deal_map = {}
