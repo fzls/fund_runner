@@ -79,9 +79,13 @@ class BackTrackingDeal:
         invest_share = 0.0  # 总投资份额
         sell_money = 0.0  # 总卖出金额
 
+        first_info = None
         last_info = None
 
         for info in self.get_range_data(start_time, end_time):
+            if first_info is None:
+                first_info = info
+
             if last_info is not None:
                 # 处理T-1日的决策信息
                 net_values.append(last_info)
@@ -116,6 +120,7 @@ class BackTrackingDeal:
                     "share_money": invest_share * last_info.unit_net_value,
                     "sell_money": sell_money,
                     "annualized_profit_rate": annualized_profit_rate,
+                    "unit_net_value_change_rate": "%.4f%%" % (100 * (last_info.unit_net_value - first_info.unit_net_value) / first_info.unit_net_value)
                 })
 
             # T日
