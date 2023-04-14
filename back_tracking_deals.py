@@ -38,8 +38,8 @@ class BackTrackingDeal:
 
     def in_range(self, time: str, start: str, end: str) -> bool:
         return datetime.datetime.strptime(start, "%Y-%m-%d") <= \
-               datetime.datetime.strptime(time, "%Y-%m-%d") <= \
-               datetime.datetime.strptime(end, "%Y-%m-%d")
+            datetime.datetime.strptime(time, "%Y-%m-%d") <= \
+            datetime.datetime.strptime(end, "%Y-%m-%d")
 
     def get_data_index(self, time: str) -> int:
         target = datetime.datetime.strptime(time, "%Y-%m-%d")
@@ -329,7 +329,6 @@ def main():
         # plt.show()
         plt.savefig("profit.png")
         webbrowser.get("C:/Program Files/Google/Chrome/Application/chrome.exe %s").open(os.path.realpath("profit.png"))
-
 
     # 清空结果目录
     result_dir = "result"
