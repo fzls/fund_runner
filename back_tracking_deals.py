@@ -277,18 +277,22 @@ def main():
     lastYear = (datetime.datetime.now() - datetime.timedelta(days=int(365))).strftime("%Y-%m-%d")
     lastTwoYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 2))).strftime("%Y-%m-%d")
     lastThreeYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 3))).strftime("%Y-%m-%d")
+    lastFourYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 4))).strftime("%Y-%m-%d")
     times = [
         {"start": lastMonth, "end": now},  # 上个月
         # {"start": lastTwoMonth, "end": now},  # 前两个月
         {"start": lastSeason, "end": now},  # 上个季度
         # {"start": lastFourMonth, "end": now},  # 前四个月
         # {"start": lastFiveMonth, "end": now},  # 前五个月
+
         {"start": lastHalfYear, "end": now},  # 前半年
         {"start": lastYear, "end": now},  # 前年
         {"start": lastTwoYear, "end": now},  # 前两年
         {"start": lastThreeYear, "end": now},  # 前三年
-        {"start": lastThreeYear, "end": lastTwoYear},  # 前三年到前两年，方便回溯
+
         {"start": lastTwoYear, "end": lastYear},  # 前两年到去年，方便回溯
+        {"start": lastThreeYear, "end": lastYear},  # 前三年到去年，方便回溯
+        {"start": lastFourYear, "end": lastYear},  # 前四年到去年，方便回溯
     ]
 
     fund_deal_map = {}
