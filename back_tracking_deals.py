@@ -142,7 +142,7 @@ class BackTrackingDeal:
 
 def get_dingtou_days():
     days = []
-    start = datetime.datetime.strptime("2019-10-23", "%Y-%m-%d")
+    start = datetime.datetime.strptime("2019-10-05", "%Y-%m-%d")
     now = datetime.datetime.now()
     while start < now:
         days.append(start.strftime("%Y-%m-%d"))
