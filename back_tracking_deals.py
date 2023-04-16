@@ -284,8 +284,8 @@ def main():
         {"start": lastSeason, "end": now},  # 上个季度
         # {"start": lastFourMonth, "end": now},  # 前四个月
         # {"start": lastFiveMonth, "end": now},  # 前五个月
-
         {"start": lastHalfYear, "end": now},  # 前半年
+
         {"start": lastYear, "end": now},  # 前年
         {"start": lastTwoYear, "end": now},  # 前两年
         {"start": lastThreeYear, "end": now},  # 前三年
