@@ -347,6 +347,7 @@ def main():
         for peroid in peroids:
             summary[peroid] = {
                 "fund_name": "平均",
+                "fund_code": "平均",
                 "duration": duration,
                 "strategy": "%d天" % peroid,
                 "invest_money": 0.001,
@@ -367,6 +368,7 @@ def main():
                 if len(profit) != 0:
                     outputs.append({
                         "fund_name": fund["name"],
+                        "fund_code": fund["code"],
                         "duration": duration,
                         "strategy": strategy.name(),
                         "invest_money": profit["invest_money"],
@@ -377,8 +379,9 @@ def main():
                     })
 
                     # show status
-                    line = "%s,%s天,%s,%s,%s,%s,%s,%s" % (
+                    line = "%s,%s,%s天,%s,%s,%s,%s,%s,%s" % (
                         fund["name"],
+                        fund["code"],
                         duration,
                         strategy.name(),
                         profit["invest_money"],
@@ -400,11 +403,12 @@ def main():
             outputs.append(v)
 
         with open(file_name, "w+") as ouput_file:
-            print("名称,时长,定投周期,总投入,总盈利,总盈利率,年化利率,净值变化率", file=ouput_file)
+            print("名称,代码,时长,定投周期,总投入,总盈利,总盈利率,年化利率,净值变化率", file=ouput_file)
 
             for output in outputs:
-                line = "%s,%s天,%s,%s,%s,%s,%s,%s" % (
+                line = "%s,%s,%s天,%s,%s,%s,%s,%s,%s" % (
                     output["fund_name"],
+                    "_" + output["fund_code"],
                     output["duration"],
                     output["strategy"],
                     output["invest_money"],
