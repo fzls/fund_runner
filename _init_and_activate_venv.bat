@@ -1,4 +1,4 @@
-python -m venv_dev .venv_dev
+python -m venv .venv_dev
 call .venv_dev\Scripts\activate.bat
 
 python -m pip install -i https://pypi.doubanio.com/simple --upgrade pip setuptools wheel
