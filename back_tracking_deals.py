@@ -297,6 +297,8 @@ def main():
     lastTwoYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 2))).strftime("%Y-%m-%d")
     lastThreeYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 3))).strftime("%Y-%m-%d")
     lastFourYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 4))).strftime("%Y-%m-%d")
+    lastFiveYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 5))).strftime("%Y-%m-%d")
+    lastSixYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 6))).strftime("%Y-%m-%d")
     times = [
         {"start": lastMonth, "end": now},  # 上个月
         # {"start": lastTwoMonth, "end": now},  # 前两个月
@@ -308,10 +310,14 @@ def main():
         {"start": lastYear, "end": now},  # 前年
         {"start": lastTwoYear, "end": now},  # 前两年
         {"start": lastThreeYear, "end": now},  # 前三年
+        {"start": lastFourYear, "end": now},  # 前四年
+        {"start": lastFiveYear, "end": now},  # 前五年
 
         {"start": lastTwoYear, "end": lastYear},  # 前两年到去年，方便回溯
         {"start": lastThreeYear, "end": lastYear},  # 前三年到去年，方便回溯
         {"start": lastFourYear, "end": lastYear},  # 前四年到去年，方便回溯
+        {"start": lastFiveYear, "end": lastYear},  # 前五年到去年，方便回溯
+        {"start": lastSixYear, "end": lastYear},  # 前六年到去年，方便回溯
     ]
 
     fund_deal_map = {}
