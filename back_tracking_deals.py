@@ -334,7 +334,7 @@ def main():
         # plt.title(u'基金走势图')
         fig, axs = plt.subplots(len(fund_deal_map), figsize=(10, 5 * len(fund_deal_map)))
         idx = 0
-        start_dingtou_time = "2019-10-15"
+        start_dingtou_time = lastFiveYear
         for name, fund in fund_deal_map.items():
             data = fund.get_range_data(start_dingtou_time, now)
             # data = fund.fund.data
