@@ -139,10 +139,9 @@ class BackTrackingDeal:
         return {}
         pass
 
-
-def get_dingtou_days():
+def get_dingtou_days(start_dingtou_time: str):
     days = []
-    start = datetime.datetime.strptime("2019-10-05", "%Y-%m-%d")
+    start = datetime.datetime.strptime(start_dingtou_time, "%Y-%m-%d")
     now = datetime.datetime.now()
     while start < now:
         days.append(start.strftime("%Y-%m-%d"))
@@ -347,7 +346,7 @@ def main():
 
             total_change_rate = (data[-1].unit_net_value - data[0].unit_net_value) / data[0].unit_net_value * 100
             axs[idx].plot_date(x_date, y_data, '-', label=u"%s-%s-[%f%%]-[%s]" % (fund.fund_code, fund.fund_name, total_change_rate, profit["profit_rate"]))
-            for day in get_dingtou_days():
+            for day in get_dingtou_days(start_dingtou_time):
                 axs[idx].axvline(datestr2num(day), ymin=0.0, ymax=1.0, color="gray")
             axs[idx].legend()
             axs[idx].grid(True)
