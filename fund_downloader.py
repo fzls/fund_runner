@@ -14,19 +14,20 @@ import shutil
 
 import requests
 
+# 若过期，则参考 https://fundf10.eastmoney.com/jjjz_000216.html 页面的请求，更新cookie
 headers = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
     "Accept-Encoding": "gzip, deflate",
     "Accept-Language": "en,zh-CN;q=0.9,zh;q=0.8,zh-TW;q=0.7,en-GB;q=0.6,ja;q=0.5",
     "Cache-Control": "max-age=0",
     "Connection": "keep-alive",
-    "Cookie": "ASP.NET_SessionId=ifqhxwf1tuwcui1rh4o2evdm; st_si=68354466271833; st_asi=delete; _adsame_fullscreen_16928=1; FundWebTradeUserInfo=JTdCJTIyQ3VzdG9tZXJObyUyMjolMjIlMjIsJTIyQ3VzdG9tZXJOYW1lJTIyOiUyMiUyMiwlMjJWaXBMZXZlbCUyMjolMjIlMjIsJTIyTFRva2VuJTIyOiUyMiUyMiwlMjJJc1Zpc2l0b3IlMjI6JTIyJTIyLCUyMlJpc2slMjI6JTIyJTIyJTdE; qgqp_b_id=30d909200d3019b496a281498c587c9a; _adsame_fullscreen_18503=1; EMFUND1=null; EMFUND2=null; EMFUND3=null; EMFUND4=null; EMFUND5=null; EMFUND6=null; EMFUND7=null; EMFUND0=null; EMFUND8=07-27%2016%3A36%3A00@%23%24%u4FE1%u8FBE%u6FB3%u94F6%u65B0%u80FD%u6E90%u4EA7%u4E1A%u80A1%u7968@%23%24001410; EMFUND9=07-27 16:36:11@#$%u56FD%u6CF0%u56FD%u8BC1%u6709%u8272%u91D1%u5C5E%u884C%u4E1A%u5206%u7EA7B@%23%24150197; st_pvi=55245435666572; st_sp=2019-04-01%2011%3A39%3A25; st_inirUrl=https%3A%2F%2Fwww.baidu.com%2Flink; st_sn=20; st_psi=20200727163640224-0-2607014817",
+    "Cookie": "qgqp_b_id=2678f31d9266f2a387bfd72a2eb6ae0d; AUTH_FUND.EASTMONEY.COM_GSJZ=AUTH*TTJJ*TOKEN; HAList=ty-100-N225-%u65E5%u7ECF225; EMFUND1=null; EMFUND2=null; EMFUND3=null; EMFUND4=null; EMFUND5=null; EMFUND6=null; EMFUND0=null; EMFUND8=02-05%2019%3A36%3A48@%23%24%u534E%u5B89%u65E5%u7ECF225ETF@%23%24513880; EMFUND9=02-05%2019%3A37%3A07@%23%24%u6613%u65B9%u8FBE%u65E5%u7ECF225ETF@%23%24513000; st_si=92844999740212; st_asi=delete; EMFUND7=02-11 16:11:28@#$%u534E%u5B89%u9EC4%u91D1%u6613ETF%u8054%u63A5A@%23%24000216; st_pvi=34726450000364; st_sp=2023-04-16%2020%3A01%3A45; st_inirUrl=http%3A%2F%2Ffund.eastmoney.com%2Fdata%2Ffundranking.html; st_sn=7; st_psi=20240211161221905-112200305283-7518348517",
     "DNT": "1",
-    "Host": "fund.eastmoney.com",
+    "Host": "api.fund.eastmoney.com",
     "If-None-Match": "b56a685e-f638-4ccc-820d-c0495e577277",
-    "Referer": "http://fund.eastmoney.com/data/fundranking.html",
+    "Referer": "https://fundf10.eastmoney.com/",
     "Upgrade-Insecure-Requests": "1",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
 }
 
 
