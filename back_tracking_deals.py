@@ -7,6 +7,7 @@
 # Email  : fzls.zju@gmail.com
 # -------------------------------
 import datetime
+import calendar
 import os
 import pathlib
 import shutil
@@ -145,12 +146,24 @@ def get_dingtou_days(start_dingtou_time: str):
     now = datetime.datetime.now()
     while start < now:
         days.append(start.strftime("%Y-%m-%d"))
-        if start.month < 12:
-            start = start.replace(month=start.month + 1)
-        else:
-            start = start.replace(year=start.year + 1, month=1)
+
+        start = get_same_day_next_month(start)
 
     return days
+
+
+def get_same_day_next_month(dt: datetime.datetime) -> datetime.datetime:
+    # Get the last day of next month
+    last_day_of_next_month = calendar.monthrange(dt.year, dt.month % 12 + 1)[1]
+
+    # Get the same day in next month, if it exists, otherwise get the last day of next month
+    day = min(dt.day, last_day_of_next_month)
+
+    # If current month is December, increment the year
+    if dt.month == 12:
+        return datetime.datetime(dt.year + 1, 1, day)
+    else:
+        return datetime.datetime(dt.year, dt.month + 1, day)
 
 
 def merge_images_vertically_and_display(images_to_merge):
