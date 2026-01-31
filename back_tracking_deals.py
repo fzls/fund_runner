@@ -312,6 +312,10 @@ def main():
     lastFourYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 4))).strftime("%Y-%m-%d")
     lastFiveYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 5))).strftime("%Y-%m-%d")
     lastSixYear = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 6))).strftime("%Y-%m-%d")
+    last10Year = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 10))).strftime("%Y-%m-%d")
+    last15Year = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 15))).strftime("%Y-%m-%d")
+    last20Year = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 20))).strftime("%Y-%m-%d")
+    last30Year = (datetime.datetime.now() - datetime.timedelta(days=int(365 * 30))).strftime("%Y-%m-%d")
     times = [
         {"start": lastMonth, "end": now},  # 上个月
         # {"start": lastTwoMonth, "end": now},  # 前两个月
@@ -347,7 +351,12 @@ def main():
         # plt.title(u'基金走势图')
         fig, axs = plt.subplots(len(fund_deal_map), figsize=(10, 5 * len(fund_deal_map)))
         idx = 0
-        start_dingtou_time = lastFiveYear
+        # start_dingtou_time = lastFiveYear
+        # start_dingtou_time = last10Year
+        start_dingtou_time = last15Year
+        # start_dingtou_time = last20Year
+        # start_dingtou_time = last30Year
+        # start_dingtou_time = "2023-07-11"
         for name, fund in fund_deal_map.items():
             data = fund.get_range_data(start_dingtou_time, now)
             # data = fund.fund.data
