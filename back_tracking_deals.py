@@ -189,8 +189,8 @@ def merge_images_vertically_and_display(images_to_merge):
 
 
 # 选项开关
-# MODE_SELECTED_ONLY = True
-MODE_SELECTED_ONLY = False
+MODE_SELECTED_ONLY = True
+# MODE_SELECTED_ONLY = False
 if MODE_SELECTED_ONLY:
     DRAW_PLOTS = True
     USE_ALL_FUNDS = False
