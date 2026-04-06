@@ -11,8 +11,12 @@ import json
 import os
 import random
 import shutil
+import time
 
 import requests
+
+CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".fund_cache")
+CACHE_EXPIRE_SECONDS = 6 * 60 * 60
 
 # 若过期，则参考 https://fundf10.eastmoney.com/jjjz_000216.html 页面的请求，更新cookie
 headers = {
@@ -50,10 +54,15 @@ class FundDownloader:
     total_count = 0
     data = []  # sort by time inc
 
-    def __init__(self, fund_code: str):
+    def __init__(
+        self, fund_code: str, cache_expire_seconds: int = CACHE_EXPIRE_SECONDS
+    ):
         self.func_code = fund_code
+        self.cache_expire_seconds = cache_expire_seconds
 
-        self._download_data()
+        if not self._load_from_cache():
+            self._download_data()
+            self._save_to_cache()
 
     def _download_data(self):
         total_count, page_size, first_page_data_list = self._download_page_data(1)
@@ -76,8 +85,9 @@ class FundDownloader:
                 item["JZZZL"] = "0.0"
             if item["DWJZ"] == "":
                 item["DWJZ"] = "1.0"
-            self.data[index] = FundDailyInfo(item["FSRQ"], float(item["DWJZ"]), float(item["JZZZL"]))
-
+            self.data[index] = FundDailyInfo(
+                item["FSRQ"], float(item["DWJZ"]), float(item["JZZZL"])
+            )
 
         print("\r", end="")
 
@@ -90,19 +100,77 @@ class FundDownloader:
             try:
                 res = requests.get(page_url, headers=headers)
             except Exception as e:
-                print("error during requests.get({}), attempt={}, e={}".format(page_url, attempt, e))
+                print(
+                    "error during requests.get({}), attempt={}, e={}".format(
+                        page_url, attempt, e
+                    )
+                )
             else:
                 break
 
         left_index = res.text.find("(")
         right_index = res.text.rfind(")")
-        data = json.loads(res.text[left_index + 1:right_index])
+        data = json.loads(res.text[left_index + 1 : right_index])
 
         total_count = data["TotalCount"]
         page_size = data["PageSize"]
         data_list = data["Data"]["LSJZList"]
 
         return total_count, page_size, data_list
+
+    def _get_cache_path(self):
+        os.makedirs(CACHE_DIR, exist_ok=True)
+        return os.path.join(CACHE_DIR, f"fund_{self.func_code}.json")
+
+    def _load_from_cache(self) -> bool:
+        cache_path = self._get_cache_path()
+        if not os.path.exists(cache_path):
+            return False
+
+        try:
+            with open(cache_path, "r", encoding="utf-8") as f:
+                cache_data = json.load(f)
+
+            cached_time = cache_data.get("cached_at", 0)
+            if time.time() - cached_time > self.cache_expire_seconds:
+                return False
+
+            self.total_count = cache_data.get("total_count", 0)
+            self.data = []
+            for item in cache_data.get("data", []):
+                self.data.append(
+                    FundDailyInfo(
+                        item["time"], item["unit_net_value"], item["daily_growth_rate"]
+                    )
+                )
+
+            print(f"[Cache] Loaded {self.func_code} from cache")
+            return True
+        except Exception as e:
+            print(f"[Cache] Failed to load cache for {self.func_code}: {e}")
+            return False
+
+    def _save_to_cache(self):
+        cache_path = self._get_cache_path()
+        cache_data = {
+            "cached_at": time.time(),
+            "total_count": self.total_count,
+            "data": [
+                {
+                    "time": item.time,
+                    "unit_net_value": item.unit_net_value,
+                    "daily_growth_rate": item.daily_growth_rate,
+                }
+                for item in self.data
+            ],
+        }
+
+        try:
+            with open(cache_path, "w", encoding="utf-8") as f:
+                json.dump(cache_data, f, ensure_ascii=False, indent=2)
+            print(f"[Cache] Saved {self.func_code} to cache")
+        except Exception as e:
+            print(f"[Cache] Failed to save cache for {self.func_code}: {e}")
 
     def print(self):
         for info in self.data:
@@ -132,7 +200,7 @@ class AllFundDownloader:
         right = ",allRecords"
         left_index = res.text.find(left)
         right_index = res.text.rfind(right)
-        data = json.loads(res.text[left_index + len(left):right_index])
+        data = json.loads(res.text[left_index + len(left) : right_index])
 
         for str in data:
             cols = str.split(",")
@@ -153,20 +221,22 @@ class FundGuzhiChartDownloader:
     def __init__(self, code, name, result_dir):
         self.code = code
         self.name = name
-        self.url = self.get_all_funds_guzhi_api.format(code=self.code, rand=random.random())
+        self.url = self.get_all_funds_guzhi_api.format(
+            code=self.code, rand=random.random()
+        )
         self.result_dir = result_dir
-        self.filepath = os.path.join(self.result_dir, '{}.png'.format(self.code))
+        self.filepath = os.path.join(self.result_dir, "{}.png".format(self.code))
 
     def save_to_local(self) -> bool:
         res = requests.get(self.url, stream=True)
         if res.status_code == 200:
-            with open(self.filepath, 'wb') as f:
+            with open(self.filepath, "wb") as f:
                 res.raw.decode_content = True
                 shutil.copyfileobj(res.raw, f)
 
         return res.status_code == 200
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     fd = FundGuzhiChartDownloader("161035", "富国中证医药主题指数增强", "guzhi_images")
     fd.save_to_local()

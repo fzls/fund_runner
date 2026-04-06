@@ -117,3 +117,4 @@ venv.bak/
 *.lnk
 
 test.py
+/.fund_cache/
