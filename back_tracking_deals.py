@@ -387,14 +387,15 @@ def main():
             y_data = [i.unit_net_value for i in data]
             axs[idx].plot_date(x_date, y_data, "-", label=name)
 
-        axs[idx].legend()
+        axs[idx].legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=3)
         axs[idx].grid(True)
         axs[idx].set_xlabel("时间")
         axs[idx].set_ylabel("单位净值")
 
-        plt.xlabel(u'时间')
-        plt.ylabel(u'单位净值')
+        plt.xlabel("时间")
+        plt.ylabel("单位净值")
         # plt.show()
+        plt.tight_layout()
         plt.savefig("profit.png")
         webbrowser.get("C:/Program Files/Google/Chrome/Application/chrome.exe %s").open(os.path.realpath("profit.png"))
 
