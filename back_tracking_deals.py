@@ -355,7 +355,7 @@ def main():
         plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
         plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
         # plt.title(u'基金走势图')
-        fig, axs = plt.subplots(len(fund_deal_map), figsize=(10, 5 * len(fund_deal_map)))
+        fig, axs = plt.subplots(len(fund_deal_map) + 1, figsize=(10, 5 * len(fund_deal_map) + 1))
         idx = 0
         # start_dingtou_time = lastFiveYear
         # start_dingtou_time = last10Year
@@ -380,6 +380,18 @@ def main():
             axs[idx].legend()
             axs[idx].grid(True)
             idx += 1
+
+        for name, fund in fund_deal_map.items():
+            data = fund.get_range_data(start_dingtou_time, now)
+            x_date = [datestr2num(i.time) for i in data]
+            y_data = [i.unit_net_value for i in data]
+            axs[idx].plot_date(x_date, y_data, "-", label=name)
+
+        axs[idx].legend()
+        axs[idx].grid(True)
+        axs[idx].set_xlabel("时间")
+        axs[idx].set_ylabel("单位净值")
+
         plt.xlabel(u'时间')
         plt.ylabel(u'单位净值')
         # plt.show()
