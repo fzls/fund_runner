@@ -364,6 +364,8 @@ def main():
         # start_dingtou_time = last20Year
         # start_dingtou_time = last30Year
         # start_dingtou_time = "2023-07-11"
+
+        # 分别绘制每个基金的净值变化与预估收益
         for name, fund in fund_deal_map.items():
             data = fund.get_range_data(start_dingtou_time, now)
             # data = fund.fund.data
@@ -382,19 +384,22 @@ def main():
             axs[idx].grid(True)
             idx += 1
 
+        # 绘制一条汇总的折线图，方便对比
         for name, fund in fund_deal_map.items():
             data = fund.get_range_data(start_dingtou_time, now)
             x_date = [datestr2num(i.time) for i in data]
-            y_data = [i.unit_net_value for i in data]
+            first_net_value = data[0].unit_net_value
+            y_data = [i.unit_net_value / first_net_value for i in data]
             axs[idx].plot_date(x_date, y_data, "-", label=name)
 
         axs[idx].legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=3)
         axs[idx].grid(True)
-        axs[idx].set_xlabel("时间")
-        axs[idx].set_ylabel("单位净值")
 
-        plt.xlabel("时间")
-        plt.ylabel("单位净值")
+        axs[idx].set_xlabel("时间")
+        axs[idx].set_ylabel("归一化净值 (起点=1)")
+        # plt.xlabel("时间")
+        # plt.ylabel("单位净值")
+
         # plt.show()
         plt.tight_layout()
         plt.savefig("profit.png")
