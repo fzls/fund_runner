@@ -344,7 +344,7 @@ def main():
         {"start": lastSixYear, "end": lastYear},  # 前六年到去年，方便回溯
     ]
 
-    fund_deal_map = {}
+    fund_deal_map = {} # type: dict[str, BackTrackingDeal]
     for idx, fund in enumerate(funds):
         #  获取基金数据
         print("[%d/%d] Loading data for %s" % (idx + 1, len(funds), fund["name"]))
