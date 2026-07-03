@@ -392,8 +392,14 @@ def main():
         for name, fund in fund_deal_map.items():
             data = fund.get_range_data(start_dingtou_time, now)
             x_date = [datestr2num(i.time) for i in data]
+            # 为了方便对比，每个净值点除以首个净值点来统一对比增长幅度
             first_net_value = data[0].unit_net_value
             y_data = [i.unit_net_value / first_net_value for i in data]
+            if fund.fund_code == "003358":
+                # 易7-10年国开债 为了方便对比股债负相关性，将债券幅度增大
+                # y_data = [1 + (v - 1) * 15 for v in y_data]
+                print("+++++ 如果想验证这段时间内的股债负相关性，可以取消注释这段代码来放大债券的波动幅度 +++++")
+
             axs[idx].plot_date(x_date, y_data, "-", label=name)
 
             max_name_len = 6
