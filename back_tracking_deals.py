@@ -385,6 +385,7 @@ def main():
             idx += 1
 
         # 绘制一条汇总的折线图，方便对比
+        curve_labels = []
         for name, fund in fund_deal_map.items():
             data = fund.get_range_data(start_dingtou_time, now)
             x_date = [datestr2num(i.time) for i in data]
@@ -392,6 +393,14 @@ def main():
             y_data = [i.unit_net_value / first_net_value for i in data]
             axs[idx].plot_date(x_date, y_data, "-", label=name)
 
+            max_name_len = 6
+            short_name = name if len(name) <=max_name_len else name[:max_name_len]
+            curve_labels.append((x_date[-1], y_data[-1], short_name))
+
+        for x_end, y_end, name in curve_labels:
+            axs[idx].annotate(name, xy=(x_end, y_end), fontsize=8,
+                              xytext=(5, 0), textcoords="offset points",
+                              va="center")
         axs[idx].legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=3)
         axs[idx].grid(True)
 
