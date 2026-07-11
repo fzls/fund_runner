@@ -358,15 +358,17 @@ def main():
         # plt.title(u'基金走势图')
         fig, axs = plt.subplots(len(fund_deal_map) + 1, figsize=(10, 5 * len(fund_deal_map) + 1))
         idx = 0
+        # start_dingtou_time = "2017-07-01"
+        # start_dingtou_time = "2023-07-11"
         # start_dingtou_time = "2025-02-18"
         # start_dingtou_time = lastYear
+        start_dingtou_time = lastTwoYear
         # start_dingtou_time = lastThreeYear
-        start_dingtou_time = lastFiveYear
+        # start_dingtou_time = lastFiveYear
         # start_dingtou_time = last10Year
         # start_dingtou_time = last15Year
         # start_dingtou_time = last20Year
         # start_dingtou_time = last30Year
-        # start_dingtou_time = "2023-07-11"
 
         # 分别绘制每个基金的净值变化与预估收益
         for name, fund in fund_deal_map.items():
